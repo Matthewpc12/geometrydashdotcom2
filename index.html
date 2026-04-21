@@ -13,8 +13,14 @@
 
     :root {
       --bg-blue: #2854cf;
+      --bg-blue-dark: #112661;
+      
       --panel-brown: #bc6d3d;
       --panel-brown-dark: #a1582c;
+      
+      /* Every End Specific Color */
+      --every-end-blue: #050a1a; 
+
       /* GD Text Style: Black stroke + Black offset shadow */
       --gd-text-stroke: 1.5px black;
       --gd-text-shadow: 3px 3px 0px rgba(0,0,0,1);
@@ -23,7 +29,8 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background: radial-gradient(circle, #2854cf 0%, #112661 100%);
+      /* Reverted to original blue gradient */
+      background: radial-gradient(circle, var(--bg-blue) 0%, var(--bg-blue-dark) 100%);
       color: white;
       font-family: 'Pusab', sans-serif;
       display: flex;
@@ -52,7 +59,6 @@
       padding: 8px 25px;
       cursor: pointer;
       border-radius: 4px;
-      transition: transform 0.1s;
       -webkit-text-stroke: 1px black;
       text-shadow: 2px 2px 0px black;
     }
@@ -81,7 +87,7 @@
       overflow-y: scroll;
       overflow-x: hidden;
       scrollbar-width: none;
-      display: none; /* Controlled by JS */
+      display: none; 
     }
 
     .content-viewport.active {
@@ -106,7 +112,7 @@
       pointer-events: none;
     }
 
-    /* Level Rows (3 visible at a time) */
+    /* Level Rows (Exactly 3 visible at a time) */
     .level-item {
       height: 33.33%; 
       flex-shrink: 0;
@@ -115,7 +121,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 40px;
-      border-bottom: 2px solid rgba(0,0,0,0.3);
+      border-bottom: 2.5px solid rgba(0,0,0,0.3);
       box-sizing: border-box;
     }
 
@@ -123,9 +129,13 @@
       background: var(--panel-brown-dark);
     }
 
-    /* Text Styling */
+    /* Special Item Colors */
+    .import-style { background: #468d49 !important; }
+    .every-end-style { background: var(--every-end-blue) !important; border-bottom: 2.5px solid #000 !important; }
+
+    /* GD Stylized Text */
     .level-name, .demon-title {
-      font-size: 32px;
+      font-size: 30px;
       margin: 0;
       text-transform: uppercase;
       -webkit-text-stroke: var(--gd-text-stroke);
@@ -145,16 +155,16 @@
       text-decoration: underline;
     }
 
-    /* Play Button */
+    /* Play Button (No Glow) */
     .play-btn {
-      width: 110px;
+      width: 105px;
       cursor: pointer;
       pointer-events: auto;
       transition: transform 0.1s;
     }
     .play-btn:hover { transform: scale(1.05); }
 
-    /* WBDL Layout */
+    /* WBDL Container */
     .demon-container {
       height: 100%;
       display: flex;
@@ -186,9 +196,6 @@
       -webkit-text-stroke: 1px black;
       text-shadow: 2px 2px 0px black;
     }
-
-    .import-style { background: #468d49 !important; }
-
   </style>
 </head>
 
@@ -204,17 +211,14 @@
     
     <div class="hub-frame-overlay"></div>
 
-    <!-- Navigation Arrows -->
     <img src="https://lwepgqwnwivcwefwlxhw.supabase.co/storage/v1/object/public/Music2/Next.png" 
          id="prev-btn" class="nav-arrow" onclick="changePage(-1)" alt="Back">
     
     <img src="https://lwepgqwnwivcwefwlxhw.supabase.co/storage/v1/object/public/Music2/Next.png" 
          id="next-btn" class="nav-arrow" onclick="changePage(1)" alt="Next">
 
-    <!-- LEVELS TAB CONTENT -->
     <div id="level-list" class="content-viewport active"></div>
 
-    <!-- WBDL TAB CONTENT -->
     <div id="demonlist-content" class="content-viewport">
       <div class="demon-container">
         <h2 class="demon-title">Web Browser Demonlist</h2>
@@ -225,7 +229,7 @@
 
   <script>
     const levels = [
-      { name: "Import Level", creator: "Custom ID", id: "custom", special: true },
+      { name: "Import Level", creator: "Custom ID", id: "custom", style: "import-style" },
       { name: "Stereo Madness", creator: "RobTop", id: "-1" },
       { name: "Back on Track", creator: "RobTop", id: "-2" },
       { name: "Polargeist", creator: "RobTop", id: "-3" },
@@ -247,7 +251,8 @@
       { name: "Geometrical Dominator", creator: "RobTop", id: "-19" },
       { name: "Deadlocked", creator: "RobTop", id: "-20" },
       { name: "Fingerdash", creator: "RobTop", id: "-21" },
-      { name: "Dash", creator: "RobTop", id: "-22" }
+      { name: "Dash", creator: "RobTop", id: "-22" },
+      { name: "Every End", creator: "MindCap", id: "-23", style: "every-end-style" }
     ];
 
     let currentPage = 0;
@@ -265,7 +270,7 @@
 
       pageItems.forEach(item => {
         const row = document.createElement('div');
-        row.className = `level-item ${item.special ? 'import-style' : ''}`;
+        row.className = `level-item ${item.style || ''}`;
         
         row.innerHTML = `
           <div class="level-info">
